@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { getUsers } from "../services/admin.service.js";
 import UserList from "../components/users/UserList.jsx";
+import AddUserForm from "../components/users/AddUserForm.jsx";
+import EditUserForm from "../components/users/EditUserForm.jsx";
+import DeleteUserModal from "../components/users/DeleteUserModal.jsx";
 
 function AdminUsersPage() {
     const [users, setUsers] = useState([]);
@@ -8,6 +11,11 @@ function AdminUsersPage() {
     const [error, setError] = useState(null);
 
     const [search, setSearch] = useState("");
+
+    const [showAddUser, setShowAddUser] = useState(false);
+    const [editingUser, setEditingUser] = useState(null);
+    const [deletingUser, setDeletingUser] = useState(null);
+    
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -42,6 +50,49 @@ function AdminUsersPage() {
         }
     };
 
+    const handleUserAdded = (newUser) => {
+        setUsers((previousUsers) => [
+            ...previousUsers,
+            newUser
+        ]);
+    };
+
+    const handleEdit = (user) => {
+        setEditingUser(user);
+    };
+
+    const handleUserUpdated = (updatedUser) => {
+        setUsers((previousUsers) =>
+            previousUsers.map((user) =>
+                user._id === updatedUser._id
+                    ? updatedUser
+                    : user
+            )
+        );
+    
+        setEditingUser(null);
+    };
+
+    const handleCancelEdit = () => {
+        setEditingUser(null);
+    };
+
+    const handleDelete = (user) => {
+        setDeletingUser(user);
+    };
+
+    const handleUserDeleted = (userId) => {
+        setUsers((previousUsers) =>
+            previousUsers.filter((user) => user._id !== userId)
+        );
+    
+        setDeletingUser(null);
+    };
+
+    const handleCancelDelete = () => {
+        setDeletingUser(null);
+    };
+
     if (loading) {
         return <p>Loading users...</p>;
     }
@@ -53,6 +104,33 @@ function AdminUsersPage() {
     return (
         <>
             <h1>Admin Users</h1>
+
+            <button onClick={() => setShowAddUser(true)}>
+                Add User
+            </button>
+
+            {showAddUser && (
+                <AddUserForm
+                    onUserAdded={handleUserAdded}
+                    onClose={() => setShowAddUser(false)}
+                />
+            )}
+
+            {editingUser && (
+                <EditUserForm
+                    user={editingUser}
+                    onUserUpdated={handleUserUpdated}
+                    onCancel={handleCancelEdit}
+                />
+            )}
+
+            {deletingUser && (
+                <DeleteUserModal
+                    user={deletingUser}
+                    onUserDeleted={handleUserDeleted}
+                    onCancel={handleCancelDelete}
+                />
+            )}
 
             <form onSubmit={handleSearch}>
                 <input
@@ -67,7 +145,11 @@ function AdminUsersPage() {
                 </button>
             </form>
 
-            <UserList users={users}/>
+            <UserList 
+                users={users}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                />
         </>
     );
 }
