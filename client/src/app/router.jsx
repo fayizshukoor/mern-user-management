@@ -1,12 +1,18 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import LoginPage from "../pages/LoginPage.jsx";
 import RegisterPage from "../pages/RegisterPage.jsx";
 import ProfilePage from "../pages/ProfilePage.jsx";
 import ProtectedRoute from "../components/auth/ProtectedRoute.jsx";
 import PublicOnlyRoute from "../components/auth/PublicOnlyRoute.jsx";
+import AdminRoute from "../components/auth/AdminRoute.jsx";
+import AdminUsersPage from "../pages/AdminUsersPage.jsx";
 
 const router = createBrowserRouter([
+    {
+        path:"/",
+        element: <Navigate to={'/login'} replace />
+    },
     {
         element: <PublicOnlyRoute />,
         children: [
@@ -26,6 +32,15 @@ const router = createBrowserRouter([
             {
                 path: "/profile",
                 element: <ProfilePage />
+            }
+        ]
+    },
+    {
+        element: <AdminRoute />,
+        children: [
+            {
+                path: '/admin/users',
+                element: <AdminUsersPage />
             }
         ]
     }
