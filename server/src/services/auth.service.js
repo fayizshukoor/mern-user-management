@@ -68,6 +68,16 @@ export const loginUser = async ({ email, password }) => {
     };
 };
 
+export const adminLoginUser = async ({ email, password }) => {
+    const result = await loginUser({ email, password });
+
+    if (result.user.role !== "admin") {
+        throw new Error("Admin access required");
+    }
+
+    return result;
+};
+
 export const refreshAccessToken = async (refreshToken) => {
     const decoded = jwt.verify(
         refreshToken,

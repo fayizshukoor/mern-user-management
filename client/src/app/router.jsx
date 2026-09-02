@@ -7,6 +7,8 @@ import ProtectedRoute from "../components/auth/ProtectedRoute.jsx";
 import PublicOnlyRoute from "../components/auth/PublicOnlyRoute.jsx";
 import AdminRoute from "../components/auth/AdminRoute.jsx";
 import AdminUsersPage from "../pages/AdminUsersPage.jsx";
+import AdminLoginPage from "../pages/AdminLoginPage.jsx";
+import AdminPublicOnlyRoute from "../components/auth/AdminPublicOnlyRoute.jsx";
 
 const router = createBrowserRouter([
     {
@@ -23,6 +25,15 @@ const router = createBrowserRouter([
             {
                 path: "/register",
                 element: <RegisterPage />
+            }
+        ]
+    },
+    {
+        element: <AdminPublicOnlyRoute />,
+        children: [
+            {
+                path: "/admin/login",
+                element: <AdminLoginPage />
             }
         ]
     },

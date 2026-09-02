@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { login, refresh, register } from '../../services/auth.service.js';
+import { login, adminLogin, refresh, register } from '../../services/auth.service.js';
 import { setAccessToken } from '../../config/api.config.js';
 import { getProfile } from '../../services/user.service.js';
 
@@ -19,6 +19,24 @@ export const loginUser = createAsyncThunk(
         return data;
     }
 )
+
+export const adminLoginUser = createAsyncThunk(
+    "auth/adminLoginUser",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const data = await adminLogin(credentials);
+
+            setAccessToken(data.accessToken);
+
+            return data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Admin login failed"
+            );
+        }
+    }
+);
 
 export const initializeAuth = createAsyncThunk(
     "auth/initializeAuth",
@@ -82,6 +100,20 @@ const authSlice = createSlice({
             state.isAuthenticated = true;
         })
         .addCase(loginUser.rejected, (state, action) =>{
+            state.loading = false;
+            state.error = action.error.message;
+        })
+        .addCase(adminLoginUser.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(adminLoginUser.fulfilled, (state, action) => {
+            state.loading = false;
+            state.user = action.payload.user;
+            state.accessToken = action.payload.accessToken;
+            state.isAuthenticated = true;
+        })
+        .addCase(adminLoginUser.rejected, (state, action) => {
             state.loading = false;
             state.error = action.error.message;
         })

@@ -48,6 +48,34 @@ export const login = async (req, res) => {
     }
 };
 
+export const adminLogin = async (req, res) => {
+    try {
+        const { user, accessToken, refreshToken } =
+            await authService.adminLoginUser(req.body);
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        res.json({
+            accessToken,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+            },
+        });
+    } catch (error) {
+        res.status(401).json({
+            message: error.message,
+        });
+    }
+};
+
 export const refresh = async (req, res) => {
     try {
         const refreshToken = req.cookies.refreshToken;
