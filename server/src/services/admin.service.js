@@ -1,16 +1,33 @@
 import User from "../models/user.model.js";
 import bcrypt from 'bcrypt';
-export const getUsers = async (search) => {
+
+export const getUsers = async (search = "", page = 1, limit = 10) => {
     const filter = search
         ? {
-            $or: [
-                { name: { $regex: search, $options: "i" } },
-                { email: { $regex: search, $options: "i" } }
-            ]
-        }
+              $or: [
+                  { name: { $regex: search, $options: "i" } },
+                  { email: { $regex: search, $options: "i" } }
+              ]
+          }
         : {};
 
-    return User.find(filter).select("-password");
+    const skip = (page - 1) * limit;
+
+    const [users, totalUsers] = await Promise.all([
+        User.find(filter)
+            .select("-password")
+            .skip(skip)
+            .limit(limit),
+
+        User.countDocuments(filter)
+    ]);
+
+    return {
+        users,
+        totalUsers,
+        currentPage: page,
+        totalPages: Math.ceil(totalUsers / limit)
+    };
 };
 
 export const createUser = async ({ name, email, password, role }) => {

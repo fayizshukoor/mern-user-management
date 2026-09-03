@@ -18,6 +18,15 @@ app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
+
+app.use((error, req, res, next) => {
+    console.error(error);
+
+    res.status(400).json({
+        message: error.message
+    });
+});
+
 app.get('/',(req, res)=>{
     res.send('server is running');
 })

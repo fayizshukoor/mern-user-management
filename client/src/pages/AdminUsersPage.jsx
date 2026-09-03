@@ -11,66 +11,51 @@ function AdminUsersPage() {
     const [error, setError] = useState(null);
 
     const [search, setSearch] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     const [showAddUser, setShowAddUser] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [deletingUser, setDeletingUser] = useState(null);
+
+    const [refreshUsers, setRefreshUsers] = useState(0);
     
 
     useEffect(() => {
-        const fetchUsers = async () => {
+        const timer = setTimeout(async () => {
             try {
-                const data = await getUsers();
-                setUsers(data);
+                setLoading(true);
+                setError(null);
+    
+                const data = await getUsers(search, currentPage, 10);
+    
+                setUsers(data.users);
+                setTotalPages(data.totalPages);
             } catch (err) {
                 setError("Failed to load users");
                 console.error(err.message);
             } finally {
                 setLoading(false);
             }
+        }, 500);
+    
+        return () => {
+            clearTimeout(timer);
         };
-    
-        fetchUsers();
-    }, []);
+    }, [search, currentPage, refreshUsers]);
 
-    const handleSearch = async (event) => {
-        event.preventDefault();
-    
-        try {
-            setLoading(true);
-            setError(null);
-    
-            const data = await getUsers(search);
-            setUsers(data);
-        } catch (err) {
-            setError("Failed to search users");
-            console.error(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
 
-    const handleUserAdded = (newUser) => {
-        setUsers((previousUsers) => [
-            ...previousUsers,
-            newUser
-        ]);
-    };
+    const handleUserAdded = () => {
+    setRefreshUsers((value) => value + 1);
+};
 
     const handleEdit = (user) => {
         setEditingUser(user);
     };
 
-    const handleUserUpdated = (updatedUser) => {
-        setUsers((previousUsers) =>
-            previousUsers.map((user) =>
-                user._id === updatedUser._id
-                    ? updatedUser
-                    : user
-            )
-        );
-    
+    const handleUserUpdated = () => {
         setEditingUser(null);
+        setRefreshUsers((value) => value + 1);
     };
 
     const handleCancelEdit = () => {
@@ -81,41 +66,31 @@ function AdminUsersPage() {
         setDeletingUser(user);
     };
 
-    const handleUserDeleted = (userId) => {
-        setUsers((previousUsers) =>
-            previousUsers.filter((user) => user._id !== userId)
-        );
-    
-        setDeletingUser(null);
-    };
+    const handleUserDeleted = () => {
+    setDeletingUser(null);
+    setRefreshUsers((value) => value + 1);
+};
 
     const handleCancelDelete = () => {
         setDeletingUser(null);
     };
 
-    if (loading) {
-        return <p>Loading users...</p>;
-    }
-
-    if (error) {
-        return <p>{error}</p>;
-    }
 
     return (
         <>
             <h1>Admin Users</h1>
-
+    
             <button onClick={() => setShowAddUser(true)}>
                 Add User
             </button>
-
+    
             {showAddUser && (
                 <AddUserForm
                     onUserAdded={handleUserAdded}
                     onClose={() => setShowAddUser(false)}
                 />
             )}
-
+    
             {editingUser && (
                 <EditUserForm
                     user={editingUser}
@@ -123,7 +98,7 @@ function AdminUsersPage() {
                     onCancel={handleCancelEdit}
                 />
             )}
-
+    
             {deletingUser && (
                 <DeleteUserModal
                     user={deletingUser}
@@ -131,25 +106,64 @@ function AdminUsersPage() {
                     onCancel={handleCancelDelete}
                 />
             )}
-
-            <form onSubmit={handleSearch}>
+    
+            <div>
                 <input
                     type="text"
                     value={search}
-                    onChange={(event) => setSearch(event.target.value)}
+                    onChange={(event) => {
+                        setSearch(event.target.value);
+                        setCurrentPage(1);
+                    }}
                     placeholder="Search by name or email"
                 />
-
-                <button type="submit">
-                    Search
-                </button>
-            </form>
-
-            <UserList 
-                users={users}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
+    
+                {search && (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setSearch("");
+                            setCurrentPage(1);
+                        }}
+                    >
+                        Clear
+                    </button>
+                )}
+            </div>
+        
+            {loading && <p>Loading users...</p>}
+    
+            {!loading && error && <p>{error}</p>}
+    
+            {!error && (
+                <UserList
+                    users={users}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
                 />
+            )}
+
+            {!loading && !error && (
+                <div>
+                    <button
+                        onClick={() => setCurrentPage((page) => page - 1)}
+                        disabled={currentPage === 1}
+                    >
+                        Previous
+                    </button>
+
+                    <span>
+                        Page {currentPage} of {totalPages}
+                    </span>
+
+                    <button
+                        onClick={() => setCurrentPage((page) => page + 1)}
+                        disabled={currentPage === totalPages}
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
         </>
     );
 }

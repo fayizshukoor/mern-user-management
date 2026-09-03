@@ -10,6 +10,8 @@ function ProfilePage(){
 
     const [profile, setProfile] = useState(null);
     const [showEditProfile, setShowEditProfile] = useState(false);
+    const [imageUploading, setImageUploading] = useState(false);
+    const [imageError, setImageError] = useState(null);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -41,14 +43,32 @@ function ProfilePage(){
     
         if (!image) return;
     
+        if (!image.type.startsWith("image/")) {
+            setImageError("Please select an image file");
+            return;
+        }
+    
+        if (image.size > 5 * 1024 * 1024) {
+            setImageError("Image must be smaller than 5MB");
+            return;
+        }
+    
         try {
+            setImageUploading(true);
+            setImageError(null);
+    
             const data = await uploadProfileImage(image);
             setProfile(data.user);
         } catch (error) {
-            console.error("Failed to upload profile image:", error.response?.data?.message);
+            setImageError(
+                error.response?.data?.message ||
+                "Failed to upload profile image"
+            );
+        } finally {
+            setImageUploading(false);
         }
     };
-
+    
     const fileInputRef = useRef(null);
 
     const handleRemoveImage = async () => {
@@ -67,6 +87,7 @@ function ProfilePage(){
     return (
         <>
             <div>
+            {imageError && <p>{imageError}</p>}
                 {profile?.profileImage ? (
                     <img
                         src={profile.profileImage}
@@ -80,8 +101,11 @@ function ProfilePage(){
                     </div>
                 )}
 
-                <button onClick={() => fileInputRef.current.click()}>
-                    Change Profile Image
+                <button
+                    onClick={() => fileInputRef.current.click()}
+                    disabled={imageUploading}
+                >
+                    {imageUploading ? "Uploading..." : "Change Profile Image"}
                 </button>
 
                 {profile?.profileImage && (

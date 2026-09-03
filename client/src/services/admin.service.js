@@ -1,13 +1,20 @@
 import api from "../config/api.config.js";
 
-export const getUsers = async (search = "") =>{
-    const response = await api.get('/admin/users',{
+export const getUsers = async (
+    search = "",
+    page = 1,
+    limit = 10
+) => {
+    const response = await api.get("/admin/users", {
         params: {
-            search
+            search,
+            page,
+            limit
         }
     });
+
     return response.data;
-}
+};
 
 export const createUser = async (userData) => {
     const response = await api.post("/admin/users", userData);
