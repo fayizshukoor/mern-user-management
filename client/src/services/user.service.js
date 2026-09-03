@@ -6,3 +6,7 @@ export const getProfile = async () =>{
 };
 
 
+export const updateProfile = async (userData) => {
+    const response = await api.put("/users/profile", userData);
+    return response.data;
+};
