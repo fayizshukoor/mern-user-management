@@ -39,7 +39,7 @@ export const updateUser = async (userId, { name, email, role }) => {
             role
         },
         {
-            new: true,
+            returnDocument: "after",
             runValidators: true
         }
     ).select("-password");
