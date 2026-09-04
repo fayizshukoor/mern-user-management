@@ -34,7 +34,7 @@ export const createUser = async ({ name, email, password, role }) => {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-        throw new Error("User already exists");
+        throw new Error("Email already exists");
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -48,6 +48,13 @@ export const createUser = async ({ name, email, password, role }) => {
 };
 
 export const updateUser = async (userId, { name, email, role }) => {
+
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser && existingUser._id.toString() !== userId) {
+        throw new Error("Email already exists");
+    }
+
     const user = await User.findByIdAndUpdate(
         userId,
         {
@@ -68,7 +75,11 @@ export const updateUser = async (userId, { name, email, role }) => {
     return user;
 };
 
-export const deleteUser = async (userId) => {
+export const deleteUser = async (userId, adminId) => {
+
+    if(String(userId) === String(adminId)){
+        throw new Error("You cannot delete your own account");
+    }
     const user = await User.findByIdAndDelete(userId);
 
     if (!user) {

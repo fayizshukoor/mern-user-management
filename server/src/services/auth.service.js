@@ -79,16 +79,20 @@ export const adminLoginUser = async ({ email, password }) => {
 };
 
 export const refreshAccessToken = async (refreshToken) => {
+
     const decoded = jwt.verify(
         refreshToken,
         process.env.JWT_REFRESH_SECRET
     );
 
+
     const user = await User.findById(decoded.userId);
+
 
     if (!user) {
         throw new Error("User not found");
     }
+
 
     return generateAccessToken(user);
 };

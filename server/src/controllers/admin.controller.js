@@ -60,7 +60,7 @@ export const updateUser = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
     try {
-        await adminService.deleteUser(req.params.id);
+        await adminService.deleteUser(req.params.id, req.user.userId);
 
         res.status(200).json({
             message: "User deleted successfully"
