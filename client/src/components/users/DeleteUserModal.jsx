@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { deleteUser } from "../../services/admin.service.js";
 import Modal from "../common/Modal.jsx";
+import "./DeleteUserModal.css";
 
 function DeleteUserModal({ user, onUserDeleted, onCancel }) {
     const [loading, setLoading] = useState(false);
@@ -27,30 +28,44 @@ function DeleteUserModal({ user, onUserDeleted, onCancel }) {
 
     return (
         <Modal onClose={onCancel}>
-            <h2>Delete User</h2>
+            <div className="delete-user-modal">
+                <h2>Delete User</h2>
 
-            <p>
-                Are you sure you want to delete{" "}
-                <strong>{user.name}</strong>?
-            </p>
+                <p>
+                    Are you sure you want to delete{" "}
+                    <strong>{user.name}</strong>?
+                </p>
 
-            {error && <p>{error}</p>}
+                <p className="delete-user-modal__warning">
+                    This action cannot be undone.
+                </p>
 
-            <button
-                type="button"
-                onClick={onCancel}
-                disabled={loading}
-            >
-                Cancel
-            </button>
+                {error && (
+                    <p className="delete-user-modal__error">
+                        {error}
+                    </p>
+                )}
 
-            <button
-                type="button"
-                onClick={handleDelete}
-                disabled={loading}
-            >
-                {loading ? "Deleting..." : "Delete"}
-            </button>
+                <div className="delete-user-modal__actions">
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        disabled={loading}
+                        className="modal-button modal-button--secondary"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={handleDelete}
+                        disabled={loading}
+                        className="modal-button modal-button--danger"
+                    >
+                        {loading ? "Deleting..." : "Delete"}
+                    </button>
+                </div>
+            </div>
         </Modal>
     );
 }

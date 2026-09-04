@@ -4,21 +4,37 @@ import { setAccessToken } from '../../config/api.config.js';
 import { getProfile } from '../../services/user.service.js';
 
 export const registerUser = createAsyncThunk(
-    'auth/registerUser',
-    async (userData) =>{
-        const data = await register(userData);
-        return data;
+    "auth/registerUser",
+    async (userData, { rejectWithValue }) => {
+        try {
+            const data = await register(userData);
+            return data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Registration failed"
+            );
+        }
     }
-)
+);
 
 export const loginUser = createAsyncThunk(
-    'auth/loginUser',
-    async (credentials) =>{
-        const data = await login(credentials);
-        setAccessToken(data.accessToken);
-        return data;
+    "auth/loginUser",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const data = await login(credentials);
+
+            setAccessToken(data.accessToken);
+
+            return data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Login failed"
+            );
+        }
     }
-)
+);
 
 export const adminLoginUser = createAsyncThunk(
     "auth/adminLoginUser",
@@ -50,7 +66,7 @@ export const initializeAuth = createAsyncThunk(
         return {
             accessToken: data.accessToken,
             user: {
-                id: profile.userId,
+                id: profile._id,
                 role: profile.role
             }
         };
@@ -74,6 +90,9 @@ const authSlice = createSlice({
             state.isAuthenticated = false;
             state.loading = false;
             state.error = null;
+        },
+        clearError: (state) => {
+            state.error = null;
         }
     },
     extraReducers: (builder)=>{
@@ -87,7 +106,7 @@ const authSlice = createSlice({
         })
         .addCase(registerUser.rejected, (state, action)=>{
             state.loading = false;
-            state.error = action.error.message;
+            state.error = action.payload;
         })
         .addCase(loginUser.pending, (state) =>{
             state.loading = true;
@@ -101,7 +120,7 @@ const authSlice = createSlice({
         })
         .addCase(loginUser.rejected, (state, action) =>{
             state.loading = false;
-            state.error = action.error.message;
+            state.error = action.payload;
         })
         .addCase(adminLoginUser.pending, (state) => {
             state.loading = true;
@@ -115,7 +134,7 @@ const authSlice = createSlice({
         })
         .addCase(adminLoginUser.rejected, (state, action) => {
             state.loading = false;
-            state.error = action.error.message;
+            state.error = action.payload;
         })
         .addCase(initializeAuth.fulfilled, (state, action) => {
             state.user = action.payload.user;
@@ -133,5 +152,5 @@ const authSlice = createSlice({
 
 })
 
-export const { logout } = authSlice.actions;
+export const { logout, clearError } = authSlice.actions;
 export default authSlice.reducer;

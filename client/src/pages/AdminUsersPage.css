@@ -1,0 +1,162 @@
+.admin-users-page {
+    width: 100%;
+    max-width: 1000px;
+
+    margin: 40px auto;
+    padding: 0 24px;
+
+    box-sizing: border-box;
+}
+
+.admin-users-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 28px;
+}
+
+.admin-users-header h1 {
+    margin: 0 0 6px;
+    font-size: 28px;
+}
+
+.admin-users-header p {
+    margin: 0;
+    color: #6b7280;
+}
+
+.admin-users__add-button {
+    padding: 10px 16px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #111827;
+    color: white;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.admin-users__add-button:hover {
+    background: #374151;
+}
+
+.admin-users-search {
+    display: flex;
+    gap: 10px;
+
+    margin-bottom: 24px;
+}
+
+.admin-users-search input {
+    flex: 1;
+
+    padding: 11px 14px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    font-size: 14px;
+    outline: none;
+}
+
+.admin-users-search input:focus {
+    border-color: #6366f1;
+}
+
+.admin-users-search button {
+    padding: 10px 16px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    background: white;
+
+    cursor: pointer;
+}
+
+.admin-users-search button:hover {
+    background: #f9fafb;
+}
+
+.admin-users__status {
+    padding: 30px 0;
+    text-align: center;
+    color: #6b7280;
+}
+
+.admin-users__error {
+    padding: 12px 14px;
+
+    border-radius: 8px;
+
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.admin-users-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+
+    margin-top: 24px;
+}
+
+.admin-users-pagination button {
+    padding: 8px 14px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    background: white;
+
+    cursor: pointer;
+}
+
+.admin-users-pagination button:hover:not(:disabled) {
+    background: #f3f4f6;
+}
+
+.admin-users-pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.admin-users-pagination span {
+    font-size: 14px;
+    color: #4b5563;
+}
+
+@media (max-width: 600px) {
+    .admin-users-page {
+        margin: 24px auto;
+        padding: 0 16px;
+    }
+
+    .admin-users-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .admin-users__add-button {
+        width: 100%;
+    }
+
+    .admin-users-search {
+        flex-direction: column;
+    }
+
+    .admin-users-search button {
+        width: 100%;
+    }
+
+    .admin-users-pagination {
+        gap: 10px;
+    }
+}

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { getUsers } from "../services/admin.service.js";
 import UserList from "../components/users/UserList.jsx";
-import AddUserForm from "../components/users/AddUserForm.jsx";
-import EditUserForm from "../components/users/EditUserForm.jsx";
+import AddUserModal from "../components/users/AddUserModal.jsx";
+import EditUserModal from "../components/users/EditUserModal.jsx";
 import DeleteUserModal from "../components/users/DeleteUserModal.jsx";
+import "./AdminUsersPage.css";
+import { useSelector } from "react-redux";
 
 function AdminUsersPage() {
     const [users, setUsers] = useState([]);
@@ -19,16 +21,16 @@ function AdminUsersPage() {
     const [deletingUser, setDeletingUser] = useState(null);
 
     const [refreshUsers, setRefreshUsers] = useState(0);
-    
+
 
     useEffect(() => {
         const timer = setTimeout(async () => {
             try {
                 setLoading(true);
                 setError(null);
-    
+
                 const data = await getUsers(search, currentPage, 10);
-    
+
                 setUsers(data.users);
                 setTotalPages(data.totalPages);
             } catch (err) {
@@ -38,7 +40,7 @@ function AdminUsersPage() {
                 setLoading(false);
             }
         }, 500);
-    
+
         return () => {
             clearTimeout(timer);
         };
@@ -46,8 +48,8 @@ function AdminUsersPage() {
 
 
     const handleUserAdded = () => {
-    setRefreshUsers((value) => value + 1);
-};
+        setRefreshUsers((value) => value + 1);
+    };
 
     const handleEdit = (user) => {
         setEditingUser(user);
@@ -67,38 +69,48 @@ function AdminUsersPage() {
     };
 
     const handleUserDeleted = () => {
-    setDeletingUser(null);
-    setRefreshUsers((value) => value + 1);
-};
+        setDeletingUser(null);
+        setRefreshUsers((value) => value + 1);
+    };
 
     const handleCancelDelete = () => {
         setDeletingUser(null);
     };
 
+    const { user } = useSelector((state) => state.auth);
 
     return (
-        <>
-            <h1>Admin Users</h1>
-    
-            <button onClick={() => setShowAddUser(true)}>
-                Add User
-            </button>
-    
+        <div className="admin-users-page">
+
+            <div className="admin-users-header">
+                <div>
+                    <h1>Admin Users</h1>
+                    <p>Manage users and their access.</p>
+                </div>
+
+                <button
+                    className="admin-users__add-button"
+                    onClick={() => setShowAddUser(true)}
+                >
+                    + Add User
+                </button>
+            </div>
+
             {showAddUser && (
-                <AddUserForm
+                <AddUserModal
                     onUserAdded={handleUserAdded}
                     onClose={() => setShowAddUser(false)}
                 />
             )}
-    
+
             {editingUser && (
-                <EditUserForm
+                <EditUserModal
                     user={editingUser}
                     onUserUpdated={handleUserUpdated}
                     onCancel={handleCancelEdit}
                 />
             )}
-    
+
             {deletingUser && (
                 <DeleteUserModal
                     user={deletingUser}
@@ -106,8 +118,8 @@ function AdminUsersPage() {
                     onCancel={handleCancelDelete}
                 />
             )}
-    
-            <div>
+
+            <div className="admin-users-search">
                 <input
                     type="text"
                     value={search}
@@ -117,7 +129,7 @@ function AdminUsersPage() {
                     }}
                     placeholder="Search by name or email"
                 />
-    
+
                 {search && (
                     <button
                         type="button"
@@ -130,23 +142,34 @@ function AdminUsersPage() {
                     </button>
                 )}
             </div>
-        
-            {loading && <p>Loading users...</p>}
-    
-            {!loading && error && <p>{error}</p>}
-    
-            {!error && (
+
+            {loading && (
+                <p className="admin-users__status">
+                    Loading users...
+                </p>
+            )}
+
+            {!loading && error && (
+                <p className="admin-users__error">
+                    {error}
+                </p>
+            )}
+
+            {!loading && !error && (
                 <UserList
                     users={users}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    currentUserId={user?.id}
                 />
             )}
 
             {!loading && !error && (
-                <div>
+                <div className="admin-users-pagination">
                     <button
-                        onClick={() => setCurrentPage((page) => page - 1)}
+                        onClick={() =>
+                            setCurrentPage((page) => page - 1)
+                        }
                         disabled={currentPage === 1}
                     >
                         Previous
@@ -157,14 +180,16 @@ function AdminUsersPage() {
                     </span>
 
                     <button
-                        onClick={() => setCurrentPage((page) => page + 1)}
+                        onClick={() =>
+                            setCurrentPage((page) => page + 1)
+                        }
                         disabled={currentPage === totalPages}
                     >
                         Next
                     </button>
                 </div>
             )}
-        </>
+        </div>
     );
 }
 

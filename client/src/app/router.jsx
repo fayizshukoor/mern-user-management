@@ -9,6 +9,7 @@ import AdminRoute from "../components/auth/AdminRoute.jsx";
 import AdminUsersPage from "../pages/AdminUsersPage.jsx";
 import AdminLoginPage from "../pages/AdminLoginPage.jsx";
 import AdminPublicOnlyRoute from "../components/auth/AdminPublicOnlyRoute.jsx";
+import AppLayout from "../components/layout/AppLayout.jsx";
 
 const router = createBrowserRouter([
     {
@@ -41,20 +42,26 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
             {
-                path: "/profile",
-                element: <ProfilePage />
-            }
-        ]
-    },
-    {
-        element: <AdminRoute />,
-        children: [
-            {
-                path: '/admin/users',
-                element: <AdminUsersPage />
+                element: <AppLayout />,
+                children: [
+                    {
+                        path: "/profile",
+                        element: <ProfilePage />
+                    },
+                    {
+                        element: <AdminRoute />,
+                        children: [
+                            {
+                                path: "/admin/users",
+                                element: <AdminUsersPage />
+                            }
+                        ]
+                    }
+                ]
             }
         ]
     }
+    
 ]);
 
 export default router;

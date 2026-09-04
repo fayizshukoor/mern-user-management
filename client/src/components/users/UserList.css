@@ -1,0 +1,117 @@
+.user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.user-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 18px 20px;
+
+    background: white;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.user-card__info {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 100px;
+    gap: 30px;
+
+    flex: 1;
+}
+
+.user-card__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.user-card__field span:first-child {
+    font-size: 12px;
+    color: #9ca3af;
+    text-transform: uppercase;
+}
+
+.user-card__field strong {
+    font-size: 14px;
+    color: #111827;
+}
+
+.user-card__role {
+    width: fit-content;
+
+    padding: 4px 9px;
+
+    border-radius: 20px;
+
+    background: #f3f4f6;
+    color: #374151;
+
+    font-size: 12px;
+}
+
+.user-card__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 120px;
+}
+
+.user-card__actions button {
+    padding: 7px 12px;
+
+    border-radius: 7px;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.user-card__edit {
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #374151;
+}
+
+.user-card__edit:hover {
+    background: #f9fafb;
+}
+
+.user-card__delete {
+    border: 1px solid #fecaca;
+    background: white;
+    color: #dc2626;
+}
+
+.user-card__delete:hover {
+    background: #fef2f2;
+}
+
+@media (max-width: 700px) {
+    .user-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .user-card__info {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .user-card__actions {
+        margin-left: 0;
+    }
+
+    .user-card__actions button {
+        flex: 1;
+    }
+}

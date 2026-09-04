@@ -1,8 +1,17 @@
+import "./Modal.css";
+
 function Modal({ children, onClose }) {
     return (
-        <div>
-            <div>
-                <button onClick={onClose}>X</button>
+        <div className="modal-overlay">
+            <div className="modal">
+                <button
+                    type="button"
+                    className="modal__close"
+                    onClick={onClose}
+                    aria-label="Close modal"
+                >
+                    ×
+                </button>
 
                 {children}
             </div>

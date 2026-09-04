@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { adminLoginUser } from "../../features/auth/auth.slice.js";
+import { useEffect, useState } from "react";
+import { adminLoginUser, clearError } from "../../features/auth/auth.slice.js";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import "./Auth.css";
 
 function AdminLoginForm() {
     const [formData, setFormData] = useState({
@@ -41,34 +42,87 @@ function AdminLoginForm() {
         }
     };
 
+    useEffect(() => {
+        dispatch(clearError());
+    }, [dispatch]);
+
     return (
-        <form onSubmit={handleSubmit}>
-            <h1>Admin Login</h1>
-
-            {error && <p>{error}</p>}
-
-            <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Admin email"
-                required
-            />
-
-            <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Password"
-                required
-            />
-
-            <button type="submit" disabled={loading}>
-                {loading ? "Logging in..." : "Admin Login"}
-            </button>
-        </form>
+        <div className="auth-page">
+            <div className="auth-card">
+    
+                <div className="auth-header">
+                    <h1>User Management</h1>
+                    <h2>Admin Login</h2>
+                    <p>Sign in to manage users</p>
+                </div>
+    
+                <form
+                    className="auth-form"
+                    onSubmit={handleSubmit}
+                >
+                    {error && (
+                        <p className="auth-error">
+                            {error}
+                        </p>
+                    )}
+    
+                    <div className="auth-field">
+                        <label htmlFor="admin-email">
+                            Email
+                        </label>
+    
+                        <input
+                            id="admin-email"
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            placeholder="Enter admin email"
+                            required
+                        />
+                    </div>
+    
+                    <div className="auth-field">
+                        <label htmlFor="admin-password">
+                            Password
+                        </label>
+    
+                        <input
+                            id="admin-password"
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            placeholder="Enter your password"
+                            required
+                        />
+                    </div>
+    
+                    <button
+                        type="submit"
+                        className="auth-button"
+                        disabled={loading}
+                    >
+                        {loading
+                            ? "Logging in..."
+                            : "Admin Login"}
+                    </button>
+                </form>
+    
+                <div className="auth-footer">
+                    <span>Not an admin?</span>
+    
+                    <button
+                        type="button"
+                        onClick={() => navigate("/login")}
+                        className="auth-link"
+                    >
+                        User Login
+                    </button>
+                </div>
+    
+            </div>
+        </div>
     );
 }
 
