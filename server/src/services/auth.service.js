@@ -68,6 +68,16 @@ export const loginUser = async ({ email, password }) => {
     };
 };
 
+export const regularLoginUser = async (credentials) =>{
+    const result = await loginUser(credentials);
+
+    if(result.user.role === "admin"){
+        throw new Error("Please use admin login");
+    }
+
+    return result;
+}
+
 export const adminLoginUser = async ({ email, password }) => {
     const result = await loginUser({ email, password });
 
